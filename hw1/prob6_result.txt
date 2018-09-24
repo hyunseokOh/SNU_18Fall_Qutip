@@ -1,0 +1,8 @@
+Singular values of case A : 
+[0.93417236 0.35682209]
+
+Singular values of case B : 
+[0.9486833  0.31622777]
+
+Singular values of case C : 
+[0.83862525 0.47402734 0.26833891]
