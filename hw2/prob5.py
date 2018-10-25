@@ -7,7 +7,10 @@ options=Options(nsteps=20000)
 def qubit_integrate(w0,vamp,wmw,g1,g2):
     H0=w0/2.0*sigmaz()
     H1=vamp/2.0*sigmax()
+    H2=vamp/2.0*sigmay()
     args={'wmw':wmw}
+
+    #  H=[H0,[H1,'np.cos(wmw*t)'],[H2,'np.sin(wmw*t)']]
     H=[H0,[H1,'np.cos(wmw*t)']]
     H_rwa=(w0-wmw)/2.0*sigmaz()+vamp/2.0*sigmax()
 
@@ -27,8 +30,8 @@ def qubit_integrate(w0,vamp,wmw,g1,g2):
     return [(output.expect[0],output.expect[1],output.expect[2]),(output2.expect[0],output2.expect[1],output2.expect[2])]
 
 w0=10.0*2*np.pi
-vamp=15*2*np.pi
-wmw=10.0*2*np.pi
+vamp=8*2*np.pi
+wmw=10*2*np.pi
 g1=0.0
 g2=0.0
 
