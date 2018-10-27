@@ -112,6 +112,7 @@ v2=transform(vec2)
 ideal=cnot()*tensor(psi1,psi2)
 calc=ket2dm(tensor(v1,v2))
 print("Prob B-1")
+print(calc)
 print("Fidelity for single CNOT : "+str(fidelity(ideal,calc)))
 
 
@@ -131,6 +132,7 @@ v2=transform(vec2)
 ideal=cnot()*tensor(psi1,psi2)
 calc=ket2dm(tensor(v1,v2))
 print("Prob B-2")
+print(calc)
 print("Fidelity for single CNOT : "+str(fidelity(ideal,calc)))
 
 
@@ -151,7 +153,6 @@ ideal=cnot()*tensor(psi1,psi2)
 calc=ket2dm(tensor(v1,v2))
 print("Prob C")
 print("Fidelity for single CNOT : "+str(fidelity(ideal,calc)))
-
 
 #  Prob D 
 psi1=basis(2,0)
@@ -183,4 +184,5 @@ ideal=cnot()*cnot()*tensor(psi1,psi2)
 calc=ket2dm(tensor(v1,v2))
 print("Prob D")
 print("Fidelity for double CNOT : "+str(fidelity(ideal,calc)))
+
 
