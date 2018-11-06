@@ -32,7 +32,7 @@ def cy_td_ode_rhs(
     cdef double complex * out = <complex *>PyDataMem_NEW_ZEROED(num_rows,sizeof(complex))
      
     spmvpy(&data0[0], &idx0[0], &ptr0[0], &vec[0], 1.0, out, num_rows)
-    spmvpy(&data1[0], &idx1[0], &ptr1[0], &vec[0], np.heaviside(t,0)*np.heaviside(0.0-t,0), out, num_rows)
+    spmvpy(&data1[0], &idx1[0], &ptr1[0], &vec[0], np.heaviside(t,0)*np.heaviside(10.0-t,0), out, num_rows)
     cdef np.npy_intp dims = num_rows
     cdef np.ndarray[complex, ndim=1, mode='c'] arr_out = np.PyArray_SimpleNewFromData(1, &dims, np.NPY_COMPLEX128, out)
     PyArray_ENABLEFLAGS(arr_out, np.NPY_OWNDATA)
