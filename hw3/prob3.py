@@ -110,16 +110,18 @@ def CNOT_impl(rho0):
     #  H=[H0,[H1,'np.cos(wmw*t)']]
     wmw2=f_opt
     H0=(w01-wmw1)/2*tensor(sigmaz(),qeye(2))+(w02-wmw2)/2*tensor(qeye(2),sigmaz())+J12*tensor(sigmaz(),sigmaz())
-    Hint=(Bac1/4)*tensor(sigmax(),qeye(2))+(Bac2/4)*tensor(qeye(2),sigmax())
+    Hint=(Bac1/4)*tensor(sigmay(),qeye(2))+(Bac2/4)*tensor(qeye(2),sigmay())
     H=H0+Hint
     output=mesolve(H,rho0,tl,c_ops,[],options=options)
     
-    # Rotation without microwave, remove phase shift
-    rho1=output.states[-1]
-    Hrot=w01/2*tensor(sigmaz(),qeye(2))+w02/2*tensor(qeye(2),sigmaz())+J12*tensor(sigmaz(),sigmaz())
-    tlist_rot=np.linspace(0,1.5*np.pi/J12,2)
-    output=mesolve(Hrot,rho1,tlist_rot)
-    
+    #  Rotation without microwave, remove phase shift
+    #  rho1=output.states[-1]
+    #  Hrot=w01/2*tensor(sigmaz(),qeye(2))+w02/2*tensor(qeye(2),sigmaz())+J12*tensor(sigmaz(),sigmaz())
+#
+    #  t_sup=(2*np.pi-(w02-wmw2)*t_opt)/w02
+    #  tlist_rot=np.linspace(0,t_sup,2)
+    #  output=mesolve(Hrot,rho1,tlist_rot,[],[],options=options)
+#
     return output.states
 
 
@@ -175,5 +177,6 @@ calc2=CNOT_impl(calc)[-1]
 ideal=ket2dm(cnot()*cnot()*tensor(psi1,psi2))
 
 print("Prob D")
+print(ideal)
 print(calc2)
 print("Fidelity for single CNOT : "+str(fidelity(ideal,calc2)))
