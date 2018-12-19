@@ -132,6 +132,7 @@ def CNOT_impl(rho0,f_opt,t_opt,target):
     wmw1=0
     wmw2=0
     wmw3=0
+    Bac1,Bac2,Bac3=ampControl([target])
 
     #  tl=[0,t_opt]
     tl=np.linspace(0,t_opt,100)
@@ -224,10 +225,7 @@ def measure(psi0,op,alpha):
     op_meas=tensor(qeye(2),op,qeye(2))
 
     #  Encoding
-    Bac1,Bac2,Bac3=ampControl([1])
     rho1=CNOT_impl(rho0,f1,t1,1)[-1]
-
-    Bac1,Bac2,Bac3=ampControl([3])
     rho1=CNOT_impl(rho1,f3,t3,3)[-1]
 
     #  Error
@@ -235,16 +233,12 @@ def measure(psi0,op,alpha):
     rho2=U*rho1*U.dag()
 
     #  Decoding
-    Bac1,Bac2,Bac3=ampControl([1])
     rho3=CNOT_impl(rho2,f1,t1,1)[-1]
-
-    Bac1,Bac2,Bac3=ampControl([3])
     rho3=CNOT_impl(rho3,f3,t3,3)[-1]
 
     exp_err=np.real((rho3*op_meas).tr())/2
 
     #  Correction
-    Bac1,Bac2,Bac3=ampControl([2])
     rho4=toffoli_impl(rho3,f2,t2,2)[-1]
     
     #  Measure
