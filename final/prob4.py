@@ -20,7 +20,8 @@ def freqCalc(rho0, frelist, tlist,target):
 
     if g2>0.0:
         c_ops.append(np.sqrt(g2)*sigmaz())
-
+    
+    sx=sigmax()
     sy=sigmay()
     sz=sigmaz()
     idm=qeye(2)
@@ -41,7 +42,7 @@ def freqCalc(rho0, frelist, tlist,target):
             wmw3=frelist[i]
 
         H0=(w01-wmw1)/2*tensor(sz,idm,idm)+(w02-wmw2)/2*tensor(idm,sz,idm)+(w03-wmw3)/2*tensor(idm,idm,sz)+J12*tensor(sz,sz,idm)+J23*tensor(idm,sz,sz)
-        Hint=(Bac1/4)*tensor(sy,idm,idm)+(Bac2/4)*tensor(idm,sy,idm)+(Bac3/4)*tensor(idm,idm,sy)
+        Hint=(Bac1/4)*tensor(sx,idm,idm)+(Bac2/4)*tensor(idm,sx,idm)+(Bac3/4)*tensor(idm,idm,sx)
         H=H0+Hint
         
         output=mesolve(H,rho0,tlist,c_ops,e_ops,options=options)
@@ -157,7 +158,7 @@ def CNOT_impl(rho0,f_opt,t_opt,target):
     idm=qeye(2)
     
     H0=(w01-wmw1)/2*tensor(sz,idm,idm)+(w02-wmw2)/2*tensor(idm,sz,idm)+(w03-wmw3)/2*tensor(idm,idm,sz)+J12*tensor(sz,sz,idm)+J23*tensor(idm,sz,sz)
-    Hint=(Bac1/4)*tensor(sy,idm,idm)+(Bac2/4)*tensor(idm,sy,idm)+(Bac3/4)*tensor(idm,idm,sy)
+    Hint=(Bac1/4)*tensor(sx,idm,idm)+(Bac2/4)*tensor(idm,sx,idm)+(Bac3/4)*tensor(idm,idm,sx)
     H=H0+Hint
     
     output=mesolve(H,rho0,tl,c_ops,[],options=options)
@@ -169,7 +170,8 @@ def toffoli_impl(rho0,f_opt,t_opt,target):
     wmw1=0
     wmw2=0
     wmw3=0
-
+    Bac1,Bac2,Bac3=ampControl([target])
+    
     #  tl=[0,t_opt]
     tl=np.linspace(0,t_opt,100)
     c_ops=[]
@@ -193,7 +195,7 @@ def toffoli_impl(rho0,f_opt,t_opt,target):
     idm=qeye(2)
     
     H0=(w01-wmw1)/2*tensor(sz,idm,idm)+(w02-wmw2)/2*tensor(idm,sz,idm)+(w03-wmw3)/2*tensor(idm,idm,sz)+J12*tensor(sz,sz,idm)+J23*tensor(idm,sz,sz)
-    Hint=(Bac1/4)*tensor(sy,idm,idm)+(Bac2/4)*tensor(idm,sy,idm)+(Bac3/4)*tensor(idm,idm,sy)
+    Hint=(Bac1/4)*tensor(sx,idm,idm)+(Bac2/4)*tensor(idm,sx,idm)+(Bac3/4)*tensor(idm,idm,sx)
     H=H0+Hint
     
     output=mesolve(H,rho0,tl,c_ops,[],options=options)
@@ -273,18 +275,11 @@ f1,t1=freqFind(frelist,tlist,1)
 print("\nSpin 2 frequency finding\n")
 Bac1,Bac2,Bac3=ampControl([2])
 f2,t2=freqFind2(frelist,tlist,1,1,2)
-#  freqFind2(frelist,tlist,1,0,2)
-#  freqFind2(frelist,tlist,0,1,2)
-#  freqFind2(frelist,tlist,0,0,2)
 print("\nSpin 3 frequency finding\n")
 Bac1,Bac2,Bac3=ampControl([3])
 f3,t3=freqFind(frelist,tlist,3)
 
-f1,t1=9*2*np.pi,5.0
-f2,t2=6*2*np.pi,5.0
-f3,t3=5*2*np.pi,5.0
-
-
+#  Rotation configuration
 sx=sigmax()
 sy=sigmay()
 sz=sigmaz()
@@ -298,12 +293,13 @@ mx_ket=1/np.sqrt(2)*(s0-s1)
 y_ket=1/np.sqrt(2)*(s0+1j*s1)
 my_ket=1/np.sqrt(2)*(s0-1j*s1)
 
-alpLst=np.linspace(0,np.pi,5)
-pLst=(np.sin(alpLst/2))**2
+pLst=np.linspace(0,1,21)
+alpLst=2*np.arcsin(np.sqrt(pLst))
 fid_ideal=1-pLst
 fid=np.zeros(len(alpLst))
 fid2=np.zeros(len(alpLst))
 
+#  Measurement
 for i in range(len(alpLst)):
     alpha=alpLst[i]
     r_z_z,r_z_z2=measure(z_ket,sz,alpha)
@@ -316,10 +312,15 @@ for i in range(len(alpLst)):
     fid[i]=(1+r_z_z-r_mz_z+r_x_x-r_mx_x+r_y_y-r_my_y)/4
     fid2[i]=(1+r_z_z2-r_mz_z2+r_x_x2-r_mx_x2+r_y_y2-r_my_y2)/4
     print("Calculation ongoing (%d/%d)" % (i+1,len(alpLst)))
-    print(fid[i],fid2[i])
+
 
 fig,ax=plt.subplots()
-ax.plot(pLst,fid_ideal)
-ax.plot(pLst,fid)
-ax.plot(pLst,fid2)
+ax.plot(pLst,fid_ideal,'b--',linewidth=3)
+ax.plot(pLst,fid,'ro-')
+ax.plot(pLst,fid2,'go-')
+ax.set_title("Comparison of single qubit quantum error correction")
+ax.set_xlabel("Error probability, p")
+ax.set_ylabel("Process fidelity, f")
+ax.legend(loc=0,labels=["Ideal, no QEC", "Simulated, no QEC", "Simulated, single qubit error, with QEC"])
+fig.savefig("Prob4.png")
 plt.show()
