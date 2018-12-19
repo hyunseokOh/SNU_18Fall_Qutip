@@ -28,7 +28,7 @@ def freqCalc(rho0,frelist,tlist,target):
     for i in range(len(frelist)):
         pbar.update(i)
         
-        if target==1:
+        if target == 1:
             e_ops=[tensor(sz,idm,idm)]
             wmw1=frelist[i]
         
